@@ -1,29 +1,8 @@
 {
-  "name": "extend-bases",
+  "name": "@bluelovers/extend-bases",
   "version": "1.0.3",
-  "description": "A simple library for multiple inheritance in JavaScript.",
-  "repository": "git://github.com/aryan-programmer/extend-bases",
-  "author": "aryan.programer@gmail.com",
-  "license": "MIT",
   "private": false,
-  "dependencies": {
-    "array.prototype.flatmap": "^1.2.4",
-    "class-without-call-parent-constructor": "^2.0.4",
-    "reflect.ownkeys": "^1.0.2",
-    "tslib": "^2.3.1"
-  },
-  "devDependencies": {
-    "@bluelovers/tsconfig": "^1.0.25",
-    "@types/jest": "^27.0.1",
-    "jest": "^27.0.6",
-    "ts-jest": "^27.0.4",
-    "tslint": "^6.1.3"
-  },
-  "scripts": {
-    "test": "yarn jest",
-    "lint": "yarn tslint index.ts",
-    "lint:fix": "yarn tslint index.ts --fix"
-  },
+  "description": "A simple library for multiple inheritance in JavaScript.",
   "keywords": [
     "ts",
     "typescript",
@@ -39,5 +18,54 @@
     "extend",
     "bases",
     "extends"
-  ]
+  ],
+  "homepage": "https://github.com/bluelovers/extend-bases#readme",
+  "bugs": {
+    "url": "https://github.com/bluelovers/extend-bases/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluelovers/extend-bases.git"
+  },
+  "license": "MIT",
+  "author": "aryan.programer@gmail.com",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "yarn tslint index.ts",
+    "lint:fix": "yarn tslint index.ts --fix",
+    "test": "yarn jest",
+    "npm:publish": "npm publish",
+    "npm:publish:bump": "yarn-tool version && npm publish",
+    "preversion": "echo preversion && yarn run test",
+    "prepublishOnly": "yarn run preversion",
+    "prepublishOnly:check-bin": "ynpx --quiet @yarn-tool/check-pkg-bin",
+    "prepublishOnly:update": "yarn run ncu && yarn run sort-package-json",
+    "postpublish": "yarn run postpublish:changelog && yarn run postpublish:git:commit && yarn run postpublish:git:tag && yarn run postpublish:git:push",
+    "postpublish:changelog": "ynpx --quiet @yarn-tool/changelog && git add ./CHANGELOG.md",
+    "postpublish:git:commit": "git commit -m \"chore(release): publish\" . & echo postpublish:git:commit",
+    "postpublish:git:push": "git push --follow-tags",
+    "postpublish:git:tag": "ynpx --quiet @yarn-tool/tag",
+    "ncu": "yarn-tool ncu -u",
+    "sort-package-json": "yarn-tool sort",
+    "tsc:showConfig": "ynpx get-current-tsconfig -p"
+  },
+  "dependencies": {
+    "array.prototype.flatmap": "^1.2.4",
+    "class-without-call-parent-constructor": "^2.0.4",
+    "reflect.ownkeys": "^1.0.2",
+    "tslib": "^2.3.1"
+  },
+  "devDependencies": {
+    "@bluelovers/tsconfig": "^1.0.25",
+    "@types/jest": "^27.0.1",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.4",
+    "tslint": "^6.1.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

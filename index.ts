@@ -92,7 +92,7 @@ function setPrototypeToProxy<TBases extends Ctor[]> (
 		}
 	}
 	// proto.constructor = self;
-	// Object.freeze(proto);
+	 Object.freeze(proto);
 // 	self.prototype = proto;
 	return self as unknown as new() => object;
 }

@@ -50,7 +50,7 @@ function setPrototypeToProxy(self, baseClasses) {
         }
     }
     // proto.constructor = self;
-    // Object.freeze(proto);
+    Object.freeze(proto);
     // 	self.prototype = proto;
     return self;
 }
