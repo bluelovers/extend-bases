@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.2](https://github.com/bluelovers/extend-bases/compare/@bluelovers/extend-bases@2.0.1...@bluelovers/extend-bases@2.0.2) (2022-08-30)
+
+
+
+### ♻️　Chores
+
+* remove debug log ([1578d08](https://github.com/bluelovers/extend-bases/commit/1578d0823ff2c8b3a26ce255812d73d2e17ac425))
+
+
+
 ## [2.0.1](https://github.com/bluelovers/extend-bases/compare/@bluelovers/extend-bases@1.0.3...@bluelovers/extend-bases@2.0.1) (2022-08-30)
 
 
