@@ -1,5 +1,5 @@
 import { basename, extname } from 'path';
-import { bases, isInstanceOf, SymbolBases } from '../index';
+import { bases, isInstanceOf, SymbolBases } from '../src/index';
 
 test(`first one class`, () =>
 {

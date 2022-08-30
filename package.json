@@ -17,7 +17,9 @@
     "inherits",
     "extend",
     "bases",
-    "extends"
+    "extends",
+    "create-by-yarn-tool",
+    "create-by-tsdx"
   ],
   "homepage": "https://github.com/bluelovers/extend-bases#readme",
   "bugs": {
@@ -29,42 +31,80 @@
   },
   "license": "MIT",
   "author": "aryan.programer@gmail.com",
-  "main": "index.js",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json",
+    "./src/*": "./src/*"
+  },
+  "main": "dist/index.cjs",
+  "unpkg": "dist/index.umd.production.min.cjs",
+  "module": "dist/index.esm.mjs",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "lint": "yarn tslint index.ts",
-    "lint:fix": "yarn tslint index.ts --fix",
-    "test": "yarn jest",
+    "pretest": "echo pretest",
+    "test": "jest --passWithNoTests",
+    "test:jest": "jest --passWithNoTests",
+    "test:jest:clearCache": "jest --clearCache",
+    "test:jest:snapshot": "yarn run test:jest -- -u",
+    "test:snapshot": "yarn run test -- -u",
+    "posttest": "yarn run build",
+    "install:frozenLockfile": "yarn-tool install --frozen-lockfile",
+    "install:resetLockfile": "yarn-tool install --reset-lockfile",
+    "build": "yarn run build:tsdx && yarn run build:dts:bundle",
+    "build:dts:bundle": "ynpx dts-bundle-generator -o ./dist/index.d.ts ./src/index.ts --no-banner --inline-declare-global & echo build:dts:bundle",
+    "build:dts:copy": "copy .\\src\\index.d.ts .\\dist\\index.d.ts & echo build:dts",
+    "build:dts:tsc": "yarn run build:dts:tsc:emit && yarn run build:dts:copy",
+    "build:dts:tsc:emit": "tsc --emitDeclarationOnly --declaration --noEmit false",
+    "build:tsdx": "ynpx @bluelovers/tsdx build --target node",
+    "ci:install": "yarn install --frozen-lockfile && yarn add -W typescript@next jest ts-jest ts-node ynpx lerna yarn-tool",
+    "ci:build": "echo ci:build",
     "npm:publish": "npm publish",
-    "npm:publish:bump": "yarn-tool version && npm publish",
+    "npm:publish:bump": "yarn run version:bump && npm publish",
     "preversion": "echo preversion && yarn run test",
+    "version": "echo version",
+    "version:bump": "yarn-tool version",
+    "postversion": "echo postversion",
+    "prepublish": "echo prepublish",
+    "prepare": "echo prepare",
     "prepublishOnly": "yarn run preversion",
     "prepublishOnly:check-bin": "ynpx --quiet @yarn-tool/check-pkg-bin",
     "prepublishOnly:update": "yarn run ncu && yarn run sort-package-json",
+    "prepack": "echo prepack",
+    "pack": "echo pack",
+    "postpack": "echo postpack",
+    "publish": "echo publish",
     "postpublish": "yarn run postpublish:changelog && yarn run postpublish:git:commit && yarn run postpublish:git:tag && yarn run postpublish:git:push",
     "postpublish:changelog": "ynpx --quiet @yarn-tool/changelog && git add ./CHANGELOG.md",
     "postpublish:git:commit": "git commit -m \"chore(release): publish\" . & echo postpublish:git:commit",
     "postpublish:git:push": "git push --follow-tags",
     "postpublish:git:tag": "ynpx --quiet @yarn-tool/tag",
+    "postpublishOnly": "echo postpublishOnly",
     "ncu": "yarn-tool ncu -u",
     "sort-package-json": "yarn-tool sort",
     "tsc:showConfig": "ynpx get-current-tsconfig -p"
   },
   "dependencies": {
-    "array.prototype.flatmap": "^1.2.4",
-    "class-without-call-parent-constructor": "^2.0.4",
-    "reflect.ownkeys": "^1.0.2",
-    "tslib": "^2.3.1"
+    "array.prototype.flatmap": "^1.3.0",
+    "class-without-call-parent-constructor": "^2.0.5",
+    "reflect.ownkeys": "^1.1.0",
+    "tslib": ">=2"
   },
   "devDependencies": {
-    "@bluelovers/tsconfig": "^1.0.25",
-    "@types/jest": "^27.0.1",
-    "jest": "^27.0.6",
-    "ts-jest": "^27.0.4",
-    "tslint": "^6.1.3"
+    "@bluelovers/tsconfig": "^1.0.30",
+    "@types/array.prototype.flatmap": "^1.2.2",
+    "@types/jest": "^29.0.0",
+    "es6-class-prototype": "^1.0.4"
   },
+  "packageManager": "yarn@1.22.19",
   "publishConfig": {
     "access": "public"
   }

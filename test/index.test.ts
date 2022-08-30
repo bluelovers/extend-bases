@@ -1,7 +1,7 @@
 /* tslint:disable:only-arrow-functions */
 // Let’s first declare some classes, and import the required methods:
-import {bases, defineProperties, isInstanceOf} from "..";
-import { SymbolBases } from '../index';
+import {bases, defineProperties, isInstanceOf} from "../src";
+import { SymbolBases } from '../src/index';
 
 describe("Multiple Inheritance", function () {
 	describe("bases(...)", function () {

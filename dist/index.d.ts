@@ -1,8 +1,8 @@
 /**
  * The type of the constructor of an object.
  */
-declare type Ctor = new (...params: any[]) => any;
-declare type AnyInstancesOf<T extends Ctor[]> = InstanceType<T[number]>;
+export type ICtor = new (...params: any[]) => any;
+export type IAnyInstancesOf<T extends ICtor[]> = InstanceType<T[number]>;
 /**
  * Black magic.
  *
@@ -10,24 +10,24 @@ declare type AnyInstancesOf<T extends Ctor[]> = InstanceType<T[number]>;
  *
  * @internal
  */
-declare type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
+export type IUnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
 /**
  * Specifies that the array contains all the instances of specified constructors in order.
  */
-declare type InstancesArray<Ts extends Ctor[]> = {
-    [I in keyof Ts]: Ts[I] extends Ctor ? InstanceType<Ts[I]> : never;
+export type IInstancesArray<Ts extends ICtor[]> = {
+	[I in keyof Ts]: Ts[I] extends ICtor ? InstanceType<Ts[I]> : never;
 } & Array<InstanceType<Ts[number]>>;
-declare const SymbolBases: unique symbol;
+export declare const SymbolBases: unique symbol;
 /**
  * Specifies that the object has an array containing instances of all of the bases.
  */
-declare type HasBasesArray<TBases extends Ctor[]> = {
-    readonly [SymbolBases]: InstancesArray<TBases>;
+export type IHasBasesArray<TBases extends ICtor[]> = {
+	readonly [SymbolBases]: IInstancesArray<TBases>;
 };
 /**
  * Specifies that the object is an intersection of all of the bases, and has an array containing all of the base instances.
  */
-declare type HasBases<TBases extends Ctor[]> = UnionToIntersection<AnyInstancesOf<TBases>> & HasBasesArray<TBases>;
+export type IHasBases<TBases extends ICtor[]> = IUnionToIntersection<IAnyInstancesOf<TBases>> & IHasBasesArray<TBases>;
 /**
  * Returns a class which when "inherits" from all of the base classes.
  *
@@ -104,7 +104,7 @@ declare type HasBases<TBases extends Ctor[]> = UnionToIntersection<AnyInstancesO
  * n.deactivate();
  * console.log(n.val, n[SymbolBases][1].val); // false 10: The [SymbolBases] are isolated, one can't affect the other, not directly that is.
  */
-declare function bases<TBases extends Ctor[]>(...baseClasses: TBases): new (...baseInstances: InstancesArray<TBases>) => HasBases<TBases>;
+export declare function bases<TBases extends ICtor[]>(...baseClasses: TBases): new (...baseInstances: IInstancesArray<TBases>) => IHasBases<TBases>;
 /**
  * Defines the properties on the given object, the key represents the name of the property and the value as the, well, value.
  * Moreover, if the property name if prefixed with `readonly` then the property will be set to be readonly, ie non-writable, ie any attempts to edit it in strict mode will fail with a `TypeError`.
@@ -121,8 +121,8 @@ declare function bases<TBases extends Ctor[]>(...baseClasses: TBases): new (...b
  *     "readonly <>": <value>, // Define a readonly property on `this` with the name <prop> and value <value>, readonly ie any attempts to edit it in strict mode will fail with a TypeError.
  * });
  */
-declare function defineProperties<T extends object>(v: T, props: {
-    [key: string]: any;
+export declare function defineProperties<T extends object>(v: T, props: {
+	[key: string]: any;
 }): void;
 /**
  * Checks if the value `v` is an instance of the class `cls`.
@@ -132,5 +132,10 @@ declare function defineProperties<T extends object>(v: T, props: {
  * @param cls The constructor of the class to check.
  * @return Whether or not the object `v` is an instance of the given class `cls`.
  */
-declare function isInstanceOf<T extends object, TBase extends Ctor>(v: T, cls: TBase): boolean;
-export { Ctor, InstancesArray, HasBasesArray, HasBases, bases, defineProperties, isInstanceOf, SymbolBases };
+export declare function isInstanceOf<T extends object, TBase extends ICtor>(v: T, cls: TBase): boolean;
+
+export {
+	bases as default,
+};
+
+export {};

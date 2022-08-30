@@ -1,15 +1,15 @@
 // @ts-ignore
-import * as flatMap from "array.prototype.flatmap";
+import { shim as _flatMapShim } from "array.prototype.flatmap";
 // @ts-ignore
-import * as ownKeys from "reflect.ownkeys";
+import { shim as _ownKeysShim } from "reflect.ownkeys";
 import { classWithoutCallParentConstructor } from 'class-without-call-parent-constructor';
 
 if (typeof Reflect.ownKeys === "undefined") {
-	ownKeys.shim();
+	_ownKeysShim();
 }
 
 if (typeof Array.prototype.flatMap === "undefined") {
-	flatMap.shim();
+	_flatMapShim();
 }
 
 function onlyUnique<T> (value: T, index: number, self: T[]) {
@@ -19,9 +19,9 @@ function onlyUnique<T> (value: T, index: number, self: T[]) {
 /**
  * The type of the constructor of an object.
  */
-type Ctor = new(...params: any[]) => any;
+export type ICtor = new(...params: any[]) => any;
 
-type AnyInstancesOf<T extends Ctor[]> = InstanceType<T[number]>;
+type IAnyInstancesOf<T extends ICtor[]> = InstanceType<T[number]>;
 
 /**
  * Black magic.
@@ -30,31 +30,31 @@ type AnyInstancesOf<T extends Ctor[]> = InstanceType<T[number]>;
  *
  * @internal
  */
-type UnionToIntersection<U> =
+type IUnionToIntersection<U> =
 	(U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
 
 /**
  * Specifies that the array contains all the instances of specified constructors in order.
  */
-type InstancesArray<Ts extends Ctor[]> = {
-	[I in keyof Ts]: Ts[I] extends Ctor ? InstanceType<Ts[I]> : never;
+export type IInstancesArray<Ts extends ICtor[]> = {
+	[I in keyof Ts]: Ts[I] extends ICtor ? InstanceType<Ts[I]> : never;
 } & Array<InstanceType<Ts[number]>>;
 
-const SymbolBases = Symbol.for('extend-bases#bases');
+export const SymbolBases = Symbol.for('extend-bases#bases');
 
 /**
  * Specifies that the object has an array containing instances of all of the bases.
  */
-type HasBasesArray<TBases extends Ctor[]> = {
-	readonly [SymbolBases]: InstancesArray<TBases>
+export type IHasBasesArray<TBases extends ICtor[]> = {
+	readonly [SymbolBases]: IInstancesArray<TBases>
 }
 
 /**
  * Specifies that the object is an intersection of all of the bases, and has an array containing all of the base instances.
  */
-type HasBases<TBases extends Ctor[]> =
-	UnionToIntersection<AnyInstancesOf<TBases>> &
-	HasBasesArray<TBases>;
+export type IHasBases<TBases extends ICtor[]> =
+	IUnionToIntersection<IAnyInstancesOf<TBases>> &
+	IHasBasesArray<TBases>;
 
 function extendStatics (derived: any, base: any): any {
 	for (const p of Reflect.ownKeys(base)) {
@@ -68,7 +68,7 @@ function extendStatics (derived: any, base: any): any {
 	}
 }
 
-function setPrototypeToProxy<TBases extends Ctor[]> (
+function setPrototypeToProxy<TBases extends ICtor[]> (
 	self: (...args: any[]) => void,
 	baseClasses: TBases
 ) {
@@ -84,7 +84,7 @@ function setPrototypeToProxy<TBases extends Ctor[]> (
 				if (nextKey !== "constructor" && typeof val === "function") {
 					// Make sure that the function is only called on the specific base.
 					// @ts-ignore
-					proto[nextKey] = function (this: HasBases<TBases>, ...args: any[]): any {
+					proto[nextKey] = function (this: IHasBases<TBases>, ...args: any[]): any {
 						return val.apply(this[SymbolBases][i], args);
 					};
 				}
@@ -173,10 +173,10 @@ function setPrototypeToProxy<TBases extends Ctor[]> (
  * n.deactivate();
  * console.log(n.val, n[SymbolBases][1].val); // false 10: The [SymbolBases] are isolated, one can't affect the other, not directly that is.
  */
-function bases<TBases extends Ctor[]> (...baseClasses: TBases):
-	new (...baseInstances: InstancesArray<TBases>) => HasBases<TBases> {
-	type BaseInstances = InstancesArray<TBases>;
-	type Self = HasBases<TBases>;
+export function bases<TBases extends ICtor[]> (...baseClasses: TBases):
+	new (...baseInstances: IInstancesArray<TBases>) => IHasBases<TBases> {
+	type BaseInstances = IInstancesArray<TBases>;
+	type Self = IHasBases<TBases>;
 
 	class Self2 extends classWithoutCallParentConstructor(baseClasses[0]) {
 
@@ -220,12 +220,19 @@ function bases<TBases extends Ctor[]> (...baseClasses: TBases):
 				has (target: Self, p: string | number | symbol): boolean {
 					return Reflect.has(target, p) || target[SymbolBases].some(base => Reflect.has(base, p));
 				},
-				get (target: Self, p: string | number | symbol): any {
+				get (target: Self, p: string | number | symbol, receiver): any {
+
+					console.log('target', p, p in target, Object.getOwnPropertyDescriptor(target, p));
+					console.log('receiver', p, p in receiver, Object.getOwnPropertyDescriptor(receiver, p));
+
 					if (p in target) {
 						// @ts-ignore
 						return target[p];
 					}
 					for (const base of target[SymbolBases]) {
+
+						console.log('base', p in base);
+
 						if (p in base) {
 							// @ts-ignore
 							return base[p];
@@ -279,7 +286,7 @@ function bases<TBases extends Ctor[]> (...baseClasses: TBases):
 
 	setPrototypeToProxy(Self2 as any, baseClasses);
 
-	return Self2 as unknown as new(...baseInstances: BaseInstances) => HasBases<TBases>;
+	return Self2 as unknown as new(...baseInstances: BaseInstances) => IHasBases<TBases>;
 }
 
 /**
@@ -298,7 +305,7 @@ function bases<TBases extends Ctor[]> (...baseClasses: TBases):
  *     "readonly <>": <value>, // Define a readonly property on `this` with the name <prop> and value <value>, readonly ie any attempts to edit it in strict mode will fail with a TypeError.
  * });
  */
-function defineProperties<T extends object> (v: T, props: { [key: string]: any }) {
+export function defineProperties<T extends object> (v: T, props: { [key: string]: any }) {
 	for (const prop of Reflect.ownKeys(props)) {
 		if (typeof prop !== "string") {
 			continue;
@@ -327,7 +334,7 @@ function defineProperties<T extends object> (v: T, props: { [key: string]: any }
  * @param cls The constructor of the class to check.
  * @return Whether or not the object `v` is an instance of the given class `cls`.
  */
-function isInstanceOf<T extends object, TBase extends Ctor> (v: T, cls: TBase): boolean {
+export function isInstanceOf<T extends object, TBase extends ICtor> (v: T, cls: TBase): boolean {
 	if (v instanceof cls) {
 		return true;
 	}
@@ -344,4 +351,4 @@ function isInstanceOf<T extends object, TBase extends Ctor> (v: T, cls: TBase): 
 	return false;
 }
 
-export {Ctor, InstancesArray, HasBasesArray, HasBases, bases, defineProperties, isInstanceOf, SymbolBases}
+export default bases
