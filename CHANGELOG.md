@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/bluelovers/extend-bases/compare/@bluelovers/extend-bases@1.0.3...@bluelovers/extend-bases@2.0.1) (2022-08-30)
+
+
+
+### 🛠　Build System
+
+* update configuration ([c04ed17](https://github.com/bluelovers/extend-bases/commit/c04ed179d15f243a22985030a97f3a412ae41c25))
+
+
+
 ## 1.0.3 (2021-08-15)
 
 
