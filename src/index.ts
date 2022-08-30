@@ -4,6 +4,8 @@ import { shim as _flatMapShim } from "array.prototype.flatmap";
 import { shim as _ownKeysShim } from "reflect.ownkeys";
 import { classWithoutCallParentConstructor } from 'class-without-call-parent-constructor';
 
+declare var __DEV__: boolean;
+
 if (typeof Reflect.ownKeys === "undefined") {
 	_ownKeysShim();
 }
@@ -221,9 +223,11 @@ export function bases<TBases extends ICtor[]> (...baseClasses: TBases):
 					return Reflect.has(target, p) || target[SymbolBases].some(base => Reflect.has(base, p));
 				},
 				get (target: Self, p: string | number | symbol, receiver): any {
-
-					console.log('target', p, p in target, Object.getOwnPropertyDescriptor(target, p));
-					console.log('receiver', p, p in receiver, Object.getOwnPropertyDescriptor(receiver, p));
+//					if (__DEV__)
+//					{
+//						console.log('target', p, p in target, Object.getOwnPropertyDescriptor(target, p));
+//						console.log('receiver', p, p in receiver, Object.getOwnPropertyDescriptor(receiver, p));
+//					}
 
 					if (p in target) {
 						// @ts-ignore
@@ -231,7 +235,7 @@ export function bases<TBases extends ICtor[]> (...baseClasses: TBases):
 					}
 					for (const base of target[SymbolBases]) {
 
-						console.log('base', p in base);
+						//if (__DEV__) console.log('base', p in base);
 
 						if (p in base) {
 							// @ts-ignore

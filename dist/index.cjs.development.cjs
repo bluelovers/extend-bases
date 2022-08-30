@@ -94,16 +94,11 @@ function bases(...baseClasses) {
         },
 
         get(target, p, receiver) {
-          console.log('target', p, p in target, Object.getOwnPropertyDescriptor(target, p));
-          console.log('receiver', p, p in receiver, Object.getOwnPropertyDescriptor(receiver, p));
-
           if (p in target) {
             return target[p];
           }
 
           for (const base of target[SymbolBases]) {
-            console.log('base', p in base);
-
             if (p in base) {
               return base[p];
             }

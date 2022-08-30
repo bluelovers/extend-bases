@@ -37,9 +37,8 @@ function bases(...e) {
         },
         has: (e, t) => Reflect.has(e, t) || e[n].some((e => Reflect.has(e, t))),
         get(e, t, r) {
-          if (console.log("target", t, t in e, Object.getOwnPropertyDescriptor(e, t)), console.log("receiver", t, t in r, Object.getOwnPropertyDescriptor(r, t)), 
-          t in e) return e[t];
-          for (const r of e[n]) if (console.log("base", t in r), t in r) return r[t];
+          if (t in e) return e[t];
+          for (const r of e[n]) if (t in r) return r[t];
           return e[t];
         },
         set(e, t, r) {
@@ -61,10 +60,10 @@ function bases(...e) {
   return function setPrototypeToProxy(e, t) {
     const r = e.prototype;
     for (let o = t.length - 1; o >= 0; o--) {
-      const s = t[o].prototype;
+      const f = t[o].prototype;
       extendStatics(e, t[o]);
-      for (const e of Reflect.ownKeys(s)) if (e !== n && Object.prototype.hasOwnProperty.call(s, e)) {
-        const t = s[e];
+      for (const e of Reflect.ownKeys(f)) if (e !== n && Object.prototype.hasOwnProperty.call(f, e)) {
+        const t = f[e];
         "constructor" !== e && "function" == typeof t && (r[e] = function(...e) {
           return t.apply(this[n][o], e);
         });
